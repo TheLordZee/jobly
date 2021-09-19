@@ -50,9 +50,12 @@ class Company {
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll(filter) {
+  static async findAll(filter={}) {
+    if(filter.minEmployees && filter.maxEmployees && 
+      (parseInt(filter.minEmployees) > parseInt(filter.maxEmployees))){
+        throw new ExpressError("minEmployees cannot be greater than maxEmployees", 400)
+    }
     const query = makeQuery(filter);
-    console.log(query)
     const companiesRes = await db.query(
           `SELECT handle,
                   name,

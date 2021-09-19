@@ -1,4 +1,5 @@
 const { BadRequestError } = require("../expressError");
+const {ExpressError} = require("../expressError");
 
 // Takes two objects and returns the sql for the columns based on the keys and the values based on the first objects values
 
@@ -46,12 +47,12 @@ function makeQuery(filter){
         column = 'name';
         break;
       case "minEmployees":
-        operation = ">";
+        operation = ">=";
         value.push(values[i]);
         column = 'num_employees';
         break;
       case "maxEmployees":
-        operation = "<";
+        operation = "<=";
         value.push(values[i]);
         column = 'num_employees';
         break;
