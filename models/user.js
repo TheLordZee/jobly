@@ -204,6 +204,31 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
   }
+
+  /** Takes a username and a job's id applies for the job */
+  static async apply(username, jId){
+    let res = await db.query(`
+      INSERT INTO applications (username, job_id)
+      VALUES ($1, $2)
+      RETURNING username, job_id`,
+      [username, jId])
+
+    const application = res.rows[0];
+
+    if(!application) throw new NotFoundError("Either username or id is invalid");
+  }
+  
+  /**Gets all of the applications for a given user */
+  static async getApplications(username){
+    const res = await db.query(`
+      SELECT a.username, j.title, j.salary, j.equity, j.company_handle FROM applications AS a
+      LEFT JOIN jobs AS j
+      ON a.job_id = j.id
+      WHERE a.username = $1`,
+      [username])
+
+    return res.rows;
+  }
 }
 
 

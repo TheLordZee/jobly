@@ -11,6 +11,7 @@ const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
+const { application } = require("express");
 
 const router = express.Router();
 
@@ -71,6 +72,8 @@ router.get("/", ensureAdmin, async function (req, res, next) {
 router.get("/:username", isAdminOrUser, async function (req, res, next) {
   try {
     const user = await User.get(req.params.username);
+    const applications = await User.getApplications(req.params.username);
+    user.applications = applications;
     return res.json({ user });
   } catch (err) {
     return next(err);
@@ -117,6 +120,39 @@ router.delete("/:username", isAdminOrUser, async function (req, res, next) {
     return next(err);
   }
 });
+
+
+/** POST /[username]/apply/[id] 
+ * 
+ * Applies user with username to job with id.
+ * 
+ * Throws NotFound if either username or id is not found
+ * 
+ * Authorization required:  user or admin
+*/
+router.post("/:username/apply/:id", isAdminOrUser, async function(req, res, next){
+  try{
+    const {username, id} = req.params;await User.apply(username, id)
+    return res.json({message: `${username} applied to job with id of ${id}`})
+  }catch(e){
+    next(e)
+  }
+})
+
+/**GET /[username]/apply 
+ * 
+ * Returns all jobs user has applied for
+ * 
+ * Authorization required:  user or admin
+*/
+router.get("/:username/apply", isAdminOrUser, async function(req, res, next){
+  try{
+    const applications = await User.getApplications(req.params.username);
+    return res.json({applications})
+  }catch(e){
+    next(e)
+  }
+})
 
 
 module.exports = router;
