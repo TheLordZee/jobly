@@ -46,7 +46,7 @@ class Job {
     static async getAll(filter = {}) {
         const query = makeJobQuery(filter);
         const res = await db.query(`
-            SELECT id, title, salary, equity, company_handle
+            SELECT id, title, salary, equity, company_handle AS companyHandle
             FROM jobs
             ${query.query}`, query.value)
         return res.rows
@@ -74,8 +74,7 @@ class Job {
         const res = await db.query(`
         SELECT id, title, salary, equity, company_handle
         FROM jobs
-        WHERE id = $1
-        RETURNING id, title, salary, equity, company_handle AS companyHandle`,
+        WHERE id = $1`,
         [id])
 
         const job = res.rows[0];
@@ -125,13 +124,12 @@ class Job {
    * Throws NotFoundError if job not found.
    **/
     static async delete(id){
-        const rest = await db.query(`
+        const res = await db.query(`
             DELETE
             FROM jobs
             WHERE id = $1
             RETURNING id`,
             [id])
-        
         const job = res.rows[0];
 
         if(!job) throw new NotFoundError(`No job with id ${id}`)
