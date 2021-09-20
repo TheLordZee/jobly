@@ -15,7 +15,7 @@ const { UnauthorizedError } = require("../expressError");
  * It's not an error if no token was provided or if the token is not valid.
  */
 
-function authenticateJWT(req, res, next) {
+function authenticateJWT(req, res, next) { 
   try {
     const authHeader = req.headers && req.headers.authorization;
     if (authHeader) {
@@ -42,8 +42,53 @@ function ensureLoggedIn(req, res, next) {
   }
 }
 
+/**Middleware to use when they must be an Admin
+ * 
+ * If not, raises Unauthorized
+ */
+function ensureAdmin(req, res, next){
+  try{
+    if(!res.locals.user || !res.locals.user.isAdmin) throw new UnauthorizedError();
+    return next();
+  }catch(e){
+    return next(e);
+  }
+}
+
+/**Middleware to use when they must be the user
+ * 
+ * If not, raises Unauthorized
+ */
+function isUser(req, res, next){
+  try{
+    if(!res.locals.user || res.locals.user.username !== req.params.username) throw new UnauthorizedError();
+    return next();
+  }catch(e){
+    return next(e)
+  }
+}
+
+/**Middleware to use when they must be the user or admin
+ * 
+ * If not, raises Unauthorized
+ */
+function isAdminOrUser(req, res, next){
+  try{
+    if (!res.locals.user) throw new UnauthorizedError();
+    if(res.locals.user.username === req.params.username || res.locals.user.isAdmin){
+      return next()
+    }else{ 
+      throw new UnauthorizedError();
+    }
+  }catch(e){
+    return next(e)
+  }
+}
 
 module.exports = {
   authenticateJWT,
   ensureLoggedIn,
+  ensureAdmin,
+  isUser,
+  isAdminOrUser
 };

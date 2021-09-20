@@ -3,7 +3,8 @@
 const { query } = require("express");
 const db = require("../db");
 const { BadRequestError, NotFoundError, ExpressError } = require("../expressError");
-const { sqlForPartialUpdate, makeQuery } = require("../helpers/sql");
+const { sqlForPartialUpdate, makeCompanyQuery } = require("../helpers/sql");
+const Job = require('./job')
 
 /** Related functions for companies. */
 
@@ -48,6 +49,12 @@ class Company {
   /** Find all companies.
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * 
+   * Takes a filter object and filters job by the added filters
+   * 
+   * Filter can use name, minEmployees, and/or maxEmployees which are passed as keys.
+   * 
+   * Throws error if minEmployees and maxEmployees are used and minEmployees is greater than maxEmployees
    * */
 
   static async findAll(filter={}) {
@@ -55,7 +62,7 @@ class Company {
       (parseInt(filter.minEmployees) > parseInt(filter.maxEmployees))){
         throw new ExpressError("minEmployees cannot be greater than maxEmployees", 400)
     }
-    const query = makeQuery(filter);
+    const query = makeCompanyQuery(filter);
     const companiesRes = await db.query(
           `SELECT handle,
                   name,
@@ -90,6 +97,9 @@ class Company {
     const company = companyRes.rows[0];
 
     if (!company) throw new NotFoundError(`No company: ${handle}`);
+
+    const jobs = await Job.getCompanyJobs(handle);
+    company.jobs = jobs;
 
     return company;
   }
