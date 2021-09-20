@@ -21,14 +21,14 @@ class Job {
         title,
         salary,
         equity,
-        companyHandle
+        company_handle
     }) {
         const res = await db.query(`
             INSERT INTO jobs
             (title, salary, equity, company_handle)
             VALUES ($1, $2, $3, $4)
-            RETURNING id, title, salary, equity, company_handle AS companyHandle`,
-            [title, salary, equity, companyHandle])
+            RETURNING id, title, salary, equity, company_handle`,
+            [title, salary, equity, company_handle])
 
         const job = res.rows[0];
 

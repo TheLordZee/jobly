@@ -81,29 +81,29 @@ function makeJobQuery(filter) {
       res = " AND "
     }
     
-    if(keys[i] === "hasEquity" && values[i] === "true"){
-      values.push(0);
-      res = res + `equity >= $${i+1}`
+    if(keys[i] === "hasEquity" && values[i]){
+      value.push(0);
+      res = res + `equity > $${i+1}`
       query = query + res;
     }
 
     if(keys[i] !== "hasEquity"){
-    switch(keys[i]){
-      case "title":
-        operation = "ILIKE";
-        value.push(`%${values[i]}%`)
-        column = 'title';
-        break;
-      case "minSalary":
-        operation = ">=";
-        value.push(values[i]);
-        column = 'num_employees';
-        break;
-      default:
-        console.log("invalid filter");
-    }
-      res = res + `${column} ${operation} $${i+1}`
-      query = query + res;
+      switch(keys[i]){
+        case "title":
+          operation = "ILIKE";
+          value.push(`%${values[i]}%`)
+          column = 'title';
+          break;
+        case "minSalary":
+          operation = ">=";
+          value.push(values[i]);
+          column = 'salary';
+          break;
+        default:
+          console.log("invalid filter");
+      }
+        res = res + `${column} ${operation} $${i+1}`
+        query = query + res;
     }
     
   }
