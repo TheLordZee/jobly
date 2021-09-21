@@ -34,15 +34,15 @@ describe("makeCompanyQuery", function(){
     })
     test("can filter by minEmployee", function(){
        const res = makeCompanyQuery({minEmployees: 50})
-       expect(res).toEqual( { query: 'WHERE num_employees > $1', value: [ 50 ] })
+       expect(res).toEqual( { query: 'WHERE num_employees >= $1', value: [ 50 ] })
     })
     test("can filter by maxEmployee", function(){
         const res = makeCompanyQuery({maxEmployees: 50})
-        expect(res).toEqual( { query: 'WHERE num_employees < $1', value: [ 50 ] })
+        expect(res).toEqual( { query: 'WHERE num_employees <= $1', value: [ 50 ] })
     })
     test("can filter by multiple values", function(){
         const res = makeCompanyQuery({name: 'test', maxEmployees: 50})
-        expect(res).toEqual( { query: 'WHERE name ILIKE $1 AND num_employees < $2', value: [ '%test%', 50 ] })
+        expect(res).toEqual( { query: 'WHERE name ILIKE $1 AND num_employees <= $2', value: [ '%test%', 50 ] })
     })
     test("minEmployee > maxEmployee throws error", function(){
         expect(()  => {makeCompanyQuery({minEmployees: 100, maxEmployees: 50})}).toThrow('minEmployees cannot be greater than maxEmployees');

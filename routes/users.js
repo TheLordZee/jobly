@@ -122,7 +122,7 @@ router.delete("/:username", isAdminOrUser, async function (req, res, next) {
 });
 
 
-/** POST /[username]/apply/[id] 
+/** POST /[username]/apply/[id]
  * 
  * Applies user with username to job with id.
  * 

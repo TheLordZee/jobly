@@ -228,3 +228,32 @@ describe("remove", function () {
     }
   });
 });
+
+/****************************************** apply */
+
+describe("apply", function(){
+  test("works", async function(){
+    await User.apply("u2", 2)
+    const res = await db.query(`
+      SELECT * FROM applications WHERE username = 'u2'`)
+    expect(res.rows).toEqual([
+       { username: 'u2', job_id: 2 } 
+    ])
+  })
+
+  test("Not found if no such user", async function(){
+    try{
+      await User.apply("u99", 2)
+    }catch(e){
+      expect(e instanceof NotFoundError).toBeTruthy();
+    }
+  })
+
+  test("Not found if no such job_id", async function(){
+    try{
+      await User.apply("u1", 2222)
+    }catch(e){
+      expect(e instanceof NotFoundError).toBeTruthy();
+    }
+  })
+})

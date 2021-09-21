@@ -134,6 +134,7 @@ describe("GET /users", function () {
     const resp = await request(app)
         .get("/users")
         .set("authorization", `Bearer ${a1Token}`);
+    
     expect(resp.body).toEqual({
       users: [
         {
@@ -193,6 +194,7 @@ describe("GET /users/:username", function () {
     const resp = await request(app)
         .get(`/users/u1`)
         .set("authorization", `Bearer ${u1Token}`);
+    console.log(resp.body)
     expect(resp.body).toEqual({
       user: {
         username: "u1",
@@ -200,6 +202,15 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+        applications: [
+          {
+            "username": "u1",
+            "title": "j1",
+            "salary": 10,
+            "equity": "0.05",
+            "company_handle": "c1"
+          }
+        ]
       },
     });
   });
@@ -215,6 +226,15 @@ describe("GET /users/:username", function () {
         lastName: "U1L",
         email: "user1@user.com",
         isAdmin: false,
+        applications: [
+          {
+            "username": "u1",
+            "title": "j1",
+            "salary": 10,
+            "equity": "0.05",
+            "company_handle": "c1"
+          }
+        ]
       },
     });
   });
@@ -322,6 +342,91 @@ describe("PATCH /users/:username", () => {
   });
 });
 
+/***************************************** GET /users/:username/apply */
+describe("GET /users/:username/apply", function(){
+  test("works for user", async function(){
+    const res = await request(app)
+              .get(`/users/u1/apply`)
+              .set("authorization", `Bearer ${u1Token}`);
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      applications: [
+        {
+          username: 'u1',
+          title: 'j1',
+          salary: 10,
+          equity: '0.05',
+          company_handle: 'c1'
+        }
+      ]
+    })
+  })
+  test("works for admins", async function(){
+    const res = await request(app)
+              .get(`/users/u1/apply`)
+              .set("authorization", `Bearer ${a1Token}`);
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({
+      applications: [
+        {
+          username: 'u1',
+          title: 'j1',
+          salary: 10,
+          equity: '0.05',
+          company_handle: 'c1'
+        }
+      ]
+    })
+  })
+
+  test("unauth for anons", async function(){
+    const res = await request(app)
+              .get(`/users/u1/apply`)
+    expect(res.statusCode).toEqual(401)
+  })
+})
+
+/************************************ POST /users/[username]/apply/[job_id] */
+
+describe("POST /users/:username/apply/:id", function(){
+  test("works for users", async function(){
+    const res = await request(app)
+          .post(`/users/u1/apply/2`)
+          .set("authorization", `Bearer ${u1Token}`);
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ 
+      message: 'u1 applied to job with id of 2' 
+    })
+  })
+  test("works for admins", async function(){
+    const res = await request(app)
+          .post(`/users/u1/apply/2`)
+          .set("authorization", `Bearer ${u1Token}`);
+    expect(res.statusCode).toEqual(200)
+    expect(res.body).toEqual({ 
+      message: 'u1 applied to job with id of 2' 
+    })
+  })
+  test("unauth for anons", async function(){
+    const res = await request(app)
+      .post(`/users/u1/apply/2`)
+    expect(res.statusCode).toEqual(401);
+  })
+
+  test("not found if username doesn't exist", async function(){
+    const res = await request(app)
+      .post(`/users/u5/apply/2`)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(res.statusCode).toEqual(401);
+  })
+  test("not found if job_id doesn't exist", async function(){
+    const res = await request(app)
+      .post(`/users/u1/apply/20`)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(res.statusCode).toEqual(404);
+  })
+})
+
 /************************************** DELETE /users/:username */
 
 describe("DELETE /users/:username", function () {
@@ -352,3 +457,4 @@ describe("DELETE /users/:username", function () {
     expect(resp.statusCode).toEqual(404);
   });
 });
+

@@ -25,7 +25,7 @@ describe("create", function () {
         title: "job",
         salary: 100,
         equity: 0,
-        companyHandle: "c1"
+        company_handle: "c1"
     };
 
     test("works", async function () {
@@ -35,7 +35,7 @@ describe("create", function () {
             title: "job",
             salary: 100,
             equity: "0",
-            companyhandle: "c1"
+            company_handle: "c1"
         });
 
         const result = await db.query(

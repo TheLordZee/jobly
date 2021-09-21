@@ -83,6 +83,13 @@ describe("findAll", function () {
         numEmployees: 3,
         logoUrl: "http://c3.img",
       },
+      {
+        handle: "c4",
+        name: "C4",
+        description: "Desc4",
+        numEmployees: 4,
+        logoUrl: "http://c4.img",
+      },
     ]);
   });
 
@@ -109,6 +116,13 @@ describe("findAll", function () {
       description: "Desc3",
       numEmployees: 3,
       logoUrl: "http://c3.img",
+    },
+    {
+      handle: "c4",
+      name: "C4",
+      description: "Desc4",
+      numEmployees: 4,
+      logoUrl: "http://c4.img",
     }])
   })
 
@@ -137,6 +151,13 @@ describe("get", function () {
       description: "Desc1",
       numEmployees: 1,
       logoUrl: "http://c1.img",
+      jobs: [{
+        "company_handle": "c1",
+        "equity": "0.05",
+        "id": 1,
+        "salary": 10,
+        "title": "j1",
+      },]
     });
   });
 
